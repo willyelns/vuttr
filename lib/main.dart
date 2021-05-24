@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'models/useful_tool.dart';
+import 'widgets/search_bar.dart';
 import 'widgets/tool_card.dart';
 
 void main() {
@@ -78,31 +79,9 @@ class _MyHomePageState extends State<MyHomePage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              TextField(
-                onChanged: (value) {
-                  setState(() {
-                    final toFilter = widget.usefulToolList;
-                    displayedList = toFilter
-                        .where((element) => element.title
-                            .toLowerCase()
-                            .contains(value.toLowerCase()))
-                        .toList();
-                  });
-                },
-                decoration: InputDecoration(
-                  hintText: 'search',
-                  prefixIcon: Icon(Icons.search),
-                  // suffix: Row(
-                  //   children: [
-                  //     Text('search with tag'),
-                  //     Checkbox(
-                  //         value: false,
-                  //         onChanged: (value) {
-                  //           setState(() {});
-                  //         })
-                  //   ],
-                  // ),
-                ),
+              SearchBar(
+                onSearch: _onSearch,
+                hintText: 'Search',
               ),
               Container(
                 margin: const EdgeInsets.only(top: 16),
@@ -129,6 +108,16 @@ class _MyHomePageState extends State<MyHomePage> {
     print('call to add more');
   }
 
+  void _onSearch(String value) {
+    setState(() {
+      final toFilter = widget.usefulToolList;
+      displayedList = toFilter
+          .where((element) =>
+              element.title.toLowerCase().contains(value.toLowerCase()))
+          .toList();
+    });
+  }
+
   void _onDelete(String id) {
     showDialog(
         context: context,
@@ -139,11 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
             actions: [
               ElevatedButton(
                 onPressed: () {
-                  final item = widget.usefulToolList
-                      .firstWhere((element) => element.title == id);
-                  setState(() {
-                    widget.usefulToolList.remove(item);
-                  });
+                  _deleteAnItem(id);
                   Navigator.of(context).pop();
                 },
                 child: Text('Yes, I am sure'),
@@ -157,5 +142,13 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           );
         });
+  }
+
+  void _deleteAnItem(String id) {
+    final item =
+        widget.usefulToolList.firstWhere((element) => element.title == id);
+    setState(() {
+      widget.usefulToolList.remove(item);
+    });
   }
 }
